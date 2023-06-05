@@ -1,0 +1,209 @@
+{
+    // Client information.
+    "Client": {
+        "Version": "",
+        "SiteCode": "",
+        "Share": "",
+        "DownloadPriorToInstall": false,
+        "DownloadRetries": 3,
+
+        // If 'ccmsetup.exe' is not immediately available for the
+        // installer or downloader, this value sets the time we wait
+        // in minutes before aborting.
+        "WaitForShareTime": 30,
+        "InstallRetries": 3,
+        "CacheInfo": {
+            "CacheSize": 0,
+            "DeleteOrphanedData": true,
+            "Enabled": true
+        },
+        "LogInfo": {
+            "MaxLogFileSize": 0,
+            "SizeUnit": 0, // 0: Kb, 1: Mb.
+            "MaxLogHistory": 1,
+            "Enabled": true
+        },
+        "InstallParameters": {
+            "SMSSITECODE": "TS1",
+            "MP": "SOMEMP.superdomain.com",
+            "FSP": "SOMEFSP.superdomain.com",
+            "DNSSUFFIX": "superdomain.com",
+            
+            // This parameter is not the same as 'MP', it specifies a Management Point
+            // for the installer to download installation files.
+            // If you specify '/mp' and '/source', the installer tries to get files from
+            // the MP, and fallback to 'source' in case of failure.
+            "/mp": "",
+            "/source": "",
+            "/skipprereq": "silverlight.exe",
+            "/BITSPriority": "HIGH"
+        }
+    },
+    // Logging information.
+    "Log": {
+        "Path": "",
+        "Downloader": "",
+        "Installer": "",
+        "MaxLogHistory": 2,
+        "MaxLogFileSize": 1024,
+        "SizeUnit": 0, // 0: Kb, 1: Mb.
+        "ServerSideLogging": false // Logs compliance info in a server (work on web service).
+    },
+    "WindowsUpdate": {
+        "ResetWUComponentsOnFail": true,
+        "GpoErrors": {
+            "Enabled": true,
+            "AutoFix": true,
+            "LogLineCount": 30,
+            "PolicyDbFileAgeDays": 30
+        },
+        "CodeSigningCert": {
+            "Enabled": true,
+            "AutoFix": true,
+            "CertThumbprint": "",
+            "CertEncodedString": ""
+        },
+        "RequiredUpdates": {
+            "Share": "",
+            "Enabled": true,
+            "AutoFix": false
+        }
+    },
+
+    /*
+        Windows services information.
+        Start type enum:
+            0: Boot, 1: System, 2: Automatic, 3: Manual, 4: Disabled, 5: AutomaticDelayedStart.
+        State enum:
+            1: Stopped, 4: Running, 7: Paused.
+            Other status are not allowed.
+            System.ServiceProcess.ServiceController, Version=8.0.0.0.
+    */
+    "Services": [
+        {
+            "Name": "BITS",
+            "StartupType": 5,
+            "Status": 4
+        },
+        {
+            "Name": "Winmgmt",
+            "StartupType": 2,
+            "Status": 4
+        },
+        {
+            // wuauserv is 'manual' and 'stopped'. It's called by other services.
+            // Do we keep it?
+            "Name": "wuauserv",
+            "StartupType": 5,
+            "Status": 4
+        },
+        {
+            "Name": "LanmanServer",
+            "StartupType": 2,
+            "Status": 4
+        },
+        {
+            "Name": "RpcSs",
+            "StartupType": 2,
+            "Status": 4
+        },
+        {
+            "Name": "W32Time",
+            "StartupType": 2,
+            "Status": 4
+        },
+        {
+            "Name": "CcmExec",
+            "StartupType": 5,
+            "Status": 4
+        }
+    ],
+    // Testing options. What needs to be tested, and if automatic fix is enabled.
+    "Drivers": true,
+    "CheckClientDatabase": true,
+    "CheckBits": {
+        "Enabled": true,
+        "AutoFix": true
+    },
+    "CheckClientSettings": {
+        "Enabled": true,
+        "AutoFix": true,
+        "ReinstallOnAutoFixFailure": false
+    },
+    "CheckDns": {
+        "Enabled": true,
+        "AutoFix": true
+    },
+    // Not yet implemented.
+    "Reboot": {
+        "Enabled": true,
+        "MaxUptimeDays": 7,
+        "AutoFix": false, // Creates a scheduled task to reboot the PC.
+        "RebootTaskInfo": {
+            // TODO.
+        }
+    },
+    "OsDiskFreeSpace": {
+        "Enabled": true,
+        "MinFreeSpace": 15,
+        "SpaceUnit": 2 // 0: Kb, 1: Mb, 2: Gb, 3: Tb.
+    },
+    "HardwareInventory": {
+        "Enabled": true,
+        "MaxIntervalDays": 1,
+        "AutoFix": true, // Runs the hardware inventory client action.
+        "ReinstallOnAutoFixFailure": true
+    },
+    "SoftwareMetering": {
+        "Enabled": false,
+        "AutoFix": true
+    },
+    "Wmi": {
+        "Enabled": true,
+        "AutoFix": true,
+        "FixLevel": 1 // 0: Salvage Repository, 1: Reset Repository
+    },
+    "AdminShare": {
+        "Enabled": false,
+        "AutoFix": false
+    },
+    "ClientProvisioningMode": {
+        "Enabled": true,
+        "AutoFix": true
+    },
+    "ClientCertificate": {
+        "Enabled": true,
+        "AutoFix": true
+    },
+    "ClientStateMessages":{
+        "Enabled": true,
+        "AutoFix": true
+    },
+
+    "ComponentList": [
+        "TestingIfCmTaskSequence",
+        "ManageLastRunTime",
+        "ManageSolLogFile",
+        "WmiCheck",
+        "DNS",
+        "BITS",
+        "AdminShare",
+        "Drivers",
+        "SystemDiskSpace",
+        "Services",
+        "CmClient",
+        "ClientVersion",
+        "SmstsmgrService",
+        "SiteCode",
+        "CacheSize",
+        "ClientLogSize",
+        "ProvisioningMode",
+        "ClientCertificate",
+        "HardwareInventory",
+        "SoftwareMetering",
+        "ClientSettings",
+        "ClientStateMessages",
+        "WindowsUpdate",
+        "RequiredUpdates"
+    ]
+}
