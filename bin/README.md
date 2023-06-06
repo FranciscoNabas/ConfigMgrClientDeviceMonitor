@@ -1,0 +1,1 @@
+These binaries are used throughout the scripts. Here we have the SQLCE libraries, and its dependencies, and Windows.Utilities, who you can find more information [here](https://github.com/FranciscoNabas/Windows.Utilities).
