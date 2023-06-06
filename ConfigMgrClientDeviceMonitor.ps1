@@ -1,3 +1,45 @@
+<#
+    .SYNOPSIS
+
+        This script checks for the Microsoft Configuration Manager Client, and key operating system items health.
+
+    .DESCRIPTION
+
+        This is the main of 3 scripts that compose the solution.
+        This script is divided in the following stages:
+
+            - Initial setup. Where we import all external tools, and define global variables.
+            - Pre-client check.
+            - Client related checks.
+            - Windows update.
+            - Final actions.
+            - Client reinstall.
+            - Cleanup.
+        
+        You can find more detail about each stage in the project page.
+        This script is designed to generate logging, that can be configured on the 'appsettings.json' file.
+        This script takes no parameters, and it's designed to produce verbose output.
+
+    .NOTES
+
+        This script's tests were based on the famous 'ConfigMgrClientHealth' script.
+        We modernized the tests, and included new features.
+        I highly recomend looking at their project too.
+        
+        Created by: Francisco Nabas
+        Version: 1.0.0
+        Last tested on: 04-JUN-2023
+        Contact: francisconabas@outlook.com
+        
+        This software is licensed under the GNU General Public License v3.0.
+        This software follows semantic versioning.
+
+    .LINK
+
+        https://github.com/FranciscoNabas/ConfigMgrClientDeviceMonitor
+        https://github.com/AndersRodland/ConfigMgrClientHealth
+    
+#>
 [CmdletBinding(
     SupportsShouldProcess,
     ConfirmImpact = 'Medium'

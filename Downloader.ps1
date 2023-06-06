@@ -1,3 +1,32 @@
+<#
+    .SYNOPSIS
+
+        This script is being designed to download the Microsoft Configuration Manager Client installation files.
+
+    .DESCRIPTION
+
+        This script is being designed to work with the main script to download the files before installation, to avoid disruption.
+        It is still under development, and all the file integrity management is done.
+        I am still thinking on which technology to use for download.
+        Current candidates are BITS, SMB and HTTPS. Suggestions are welcome.
+
+    .NOTES
+
+        This script is not complete, but it will, in a sense, download the files from the share.
+        It currently uses 'Copy-Item', meaning it can only 'download' from a file system share.
+
+        Created by: Francisco Nabas
+        Version: 0.2.0
+        Last test:
+        Contact: francisconabas@outlook.com
+
+        This software is licensed under the GNU General Public License v3.0.
+        This software uses semantic versioning.
+
+    .LINK
+
+        https://github.com/FranciscoNabas/ConfigMgrClientDeviceMonitor
+#>
 [CmdletBinding()]
 param (
     [Parameter()]

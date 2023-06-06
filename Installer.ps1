@@ -1,3 +1,34 @@
+<#
+    .SYNOPSIS
+
+        This script was designed to install the Microsoft Configuration Manager Client.
+
+    .DESCRIPTION
+
+        This script was designed to be called from the main script, or a Windows scheduled task.
+        It will find the suitable installer location, assemble the install string with the parameters from the config
+        and execute the installation.
+        It will wait for the installation to complete, but not for the client fully stablish.
+        To get more details about the installation process, you can also follow the 'ccmsetup.log' log file.
+
+    .NOTES
+
+        This script was designed to run with the main script.
+        Although you can run it in standalone, it depends on registry keys set up by the main script.
+        Do not move or rename this script, doing so will cause the main script to fail.
+
+        Created by: Francisco Nabas
+        Version: 1.0.0
+        Last tested on: 04-JUN-2023
+        Contact: francisconabas@outlook.com
+
+        This software is licenced under the GNU General Public License v3.0.
+        This software follows semantic versioning.
+
+    .LINK
+
+        https://github.com/FranciscoNabas/ConfigMgrClientDeviceMonitor
+#>
 [CmdletBinding()]
 param ()
 
