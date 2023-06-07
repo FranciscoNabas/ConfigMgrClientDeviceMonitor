@@ -37,6 +37,7 @@
     .LINK
 
         https://github.com/FranciscoNabas/ConfigMgrClientDeviceMonitor
+        https://github.com/FranciscoNabas/Windows.Utilities
         https://github.com/AndersRodland/ConfigMgrClientHealth
     
 #>
@@ -572,16 +573,9 @@ Begin {
         #region Service SDDL reset
         Invoke-CMCHWriteLog "Resetting 'wuauserv' and 'BITS' services security descriptors."
         foreach ($service in @('BITS', 'wuauserv')) {
-
-            # TODO: Convert to Windows.Utilities.Services.SetServiceObjectSecurity()
-            $sdset_result = & "$env:SystemRoot\System32\sc.exe" 'sdset' $service 'D:(A;CI;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)'
-            if ($sdset_result -notlike '*SetServiceObjectSecurity SUCCESS') {
-                Invoke-CMCHWriteLog "Set service object security failed for service '$service'." Error
-                Invoke-CMCHWriteLog $sdset_result Error
-            }
-            else {
-                Invoke-CMCHWriteLog "Successfully reset security descriptor for service '$service'."
-            }
+            $managed_service = [Windows.Utilities.Service]::new($service)
+            $managed_service.SetServiceSddl('D:(A;CI;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)')
+            Invoke-CMCHWriteLog "Successfully reset security descriptor for service '$service'."
         }
         #endregion
 
@@ -1389,9 +1383,9 @@ Process {
                         Remove-BitsTransfer -BitsJob $error_transfers
                         Stop-Service 'BITS' -Force
 
-                        # TODO: Use 'SetNamedSecurityInfo'.
                         # Setting the security descriptor for the BITS service to the default.
-                        [void](Invoke-Expression -Command 'sc.exe sdset BITS "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"')
+                        $bits_service = [Windows.Utilities.Service]::New('BITS')
+                        $bits_service.SetServiceSddl('D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)')
                         Start-Service -Name 'BITS'
                     }
                     else {
@@ -1789,17 +1783,17 @@ Where
         Invoke-CMCHWriteLog "Checking 'smstsmgr' service dependencies."
         $managed_service = Get-Service -Name 'smstsmgr'
         if ($managed_service) {
-            if ($managed_service.ServicesDependedOn.Name -ne 'Winmgmt') {
+            if ($managed_service.ServicesDependedOn.Count -ne 2 -and ('Winmgmt' -notin $managed_service.ServicesDependedOn.Name -or 'CcmExec' -notin $managed_service.ServicesDependedOn.Name)) {
                 Invoke-CMCHWriteLog "'smstsmgr' services depended on list is not compliant. Attempting to fix." Warning
                 try {
                     $service_util = [Windows.Utilities.Service]::new('smstsmgr')
                     
                     # Currently this method can set the dependency to only one service.
-                    $service_util.SetDependency('Winmgmt')
+                    $service_util.SetDependency(@('Winmgmt', 'CcmExec'))
 
                     # Retesting.
                     $managed_service = Get-Service -Name 'smstsmgr'
-                    if ($managed_service.ServicesDependedOn.Name -ne 'Winmgmt') {
+                    if ($managed_service.ServicesDependedOn.Count -ne 2 -and ('Winmgmt' -notin $managed_service.ServicesDependedOn.Name -or 'CcmExec' -notin $managed_service.ServicesDependedOn.Name)) {
                         $Global:cmch_check_board.Rows.Find('SmstsmgrService').IsCompliant = $false
                         Invoke-CMCHWriteLog "Unable to set service dependency. SetServiceDependency returned no errors." Error
                     }
